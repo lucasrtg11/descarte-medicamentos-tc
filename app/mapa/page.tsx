@@ -24,7 +24,6 @@ export default function MapaPage() {
       }}
     >
       <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-        
         {/* HEADER */}
         <div style={{ marginBottom: "30px" }}>
           <h1
@@ -131,7 +130,7 @@ export default function MapaPage() {
           style={{
             display: "grid",
             gap: "18px",
-            gridTemplateColumns: "repeat(3, 1fr)", // ✅ FIXO EM 3 COLUNAS
+            gridTemplateColumns: "repeat(3, 1fr)",
           }}
         >
           {pontosFiltrados.map((ponto, index) => {
@@ -154,7 +153,10 @@ export default function MapaPage() {
                   transition: "all 0.25s ease",
                   color: "#1f2937",
 
-                  // ✅ CORREÇÃO FINAL
+                  display: "flex",
+                  flexDirection: "column",
+                  minHeight: "260px",
+
                   gridColumn:
                     resto === 2 && (isLast || isSecondLast)
                       ? "span 1"
@@ -172,7 +174,13 @@ export default function MapaPage() {
                   e.currentTarget.style.transform = "translateY(0)";
                 }}
               >
-                <div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    flex: 1,
+                  }}
+                >
                   <h3
                     style={{
                       marginTop: 0,
@@ -211,6 +219,7 @@ export default function MapaPage() {
                       borderRadius: "999px",
                       fontWeight: "600",
                       fontSize: "15px",
+                      marginTop: "auto",
                     }}
                   >
                     📍 Como chegar
