@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { pontosColeta } from "@/data/pontos-coleta";
 import MapaClient from "../mapa/MapaCliente";
@@ -10,6 +10,25 @@ export default function MapaPage() {
     "todos" | "Farmácia" | "Posto"
   >("todos");
 
+  const [colunas, setColunas] = useState(3);
+
+  useEffect(() => {
+    const ajustarColunas = () => {
+      if (window.innerWidth <= 640) {
+        setColunas(1);
+      } else if (window.innerWidth <= 1024) {
+        setColunas(2);
+      } else {
+        setColunas(3);
+      }
+    };
+
+    ajustarColunas();
+    window.addEventListener("resize", ajustarColunas);
+
+    return () => window.removeEventListener("resize", ajustarColunas);
+  }, []);
+
   const pontosFiltrados = pontosColeta.filter((p) =>
     filtroLista === "todos" ? true : p.tipo === filtroLista
   );
@@ -18,13 +37,15 @@ export default function MapaPage() {
     <main
       style={{
         minHeight: "100vh",
+        width: "100%",
+        overflowX: "hidden",
         background: "linear-gradient(135deg, #ecfdf5, #f0fdf4)",
         padding: "30px 16px",
         fontFamily: "Inter, Arial, sans-serif",
+        boxSizing: "border-box",
       }}
     >
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-        {/* HEADER */}
+      <div style={{ maxWidth: "1100px", margin: "0 auto", width: "100%" }}>
         <div style={{ marginBottom: "30px" }}>
           <h1
             style={{
@@ -42,7 +63,6 @@ export default function MapaPage() {
           </p>
         </div>
 
-        {/* BOTÃO */}
         <Link
           href="/"
           style={{
@@ -60,7 +80,6 @@ export default function MapaPage() {
           ← Voltar
         </Link>
 
-        {/* MAPA */}
         <section
           style={{
             background: "#ffffff",
@@ -69,6 +88,8 @@ export default function MapaPage() {
             boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
             border: "1px solid #d1fae5",
             marginBottom: "20px",
+            width: "100%",
+            boxSizing: "border-box",
           }}
         >
           <h2 style={{ marginTop: 0, color: "#065f46" }}>
@@ -82,7 +103,6 @@ export default function MapaPage() {
           <MapaClient filtro={filtroLista} />
         </section>
 
-        {/* FILTRO */}
         <div
           style={{
             display: "flex",
@@ -125,21 +145,17 @@ export default function MapaPage() {
           })}
         </div>
 
-        {/* LISTA */}
         <section
           style={{
             display: "grid",
             gap: "18px",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: `repeat(${colunas}, 1fr)`,
+            width: "100%",
+            boxSizing: "border-box",
           }}
         >
-          {pontosFiltrados.map((ponto, index) => {
+          {pontosFiltrados.map((ponto) => {
             const urlMaps = `https://www.google.com/maps/search/?api=1&query=${ponto.latitude},${ponto.longitude}`;
-
-            const total = pontosFiltrados.length;
-            const resto = total % 3;
-            const isLast = index === total - 1;
-            const isSecondLast = index === total - 2;
 
             return (
               <div
@@ -152,26 +168,10 @@ export default function MapaPage() {
                   border: "1px solid #d1fae5",
                   transition: "all 0.25s ease",
                   color: "#1f2937",
-
                   display: "flex",
                   flexDirection: "column",
                   minHeight: "260px",
-
-                  gridColumn:
-                    resto === 2 && (isLast || isSecondLast)
-                      ? "span 1"
-                      : resto === 1 && isLast
-                      ? "1 / -1"
-                      : "auto",
-
-                  textAlign:
-                    resto === 1 && isLast ? "center" : "left",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-5px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
+                  boxSizing: "border-box",
                 }}
               >
                 <div
@@ -220,6 +220,7 @@ export default function MapaPage() {
                       fontWeight: "600",
                       fontSize: "15px",
                       marginTop: "auto",
+                      boxSizing: "border-box",
                     }}
                   >
                     📍 Como chegar
