@@ -5,7 +5,7 @@ import L from "leaflet";
 import { pontosColeta } from "@/data/pontos-coleta";
 
 type Props = {
-  filtro?: "todos" | "Farmácia" | "Posto"; // 👈 agora opcional
+  filtro?: "todos" | "Farmácia" | "Posto";
 };
 
 const center: [number, number] = [-21.6955, -45.2575];
@@ -25,7 +25,6 @@ const iconPosto = L.icon({
 });
 
 export default function MapaPontos({ filtro = "todos" }: Props) {
-  // 🔥 FILTRO SEGURO
   const pontosFiltrados = pontosColeta
     .filter((p) => {
       if (filtro === "todos") return true;
@@ -62,8 +61,7 @@ export default function MapaPontos({ filtro = "todos" }: Props) {
               <div style={{ fontFamily: "Inter", minWidth: "180px" }}>
                 <strong
                   style={{
-                    color:
-                      ponto.tipo === "Posto" ? "#2563eb" : "#16a34a",
+                    color: ponto.tipo === "Posto" ? "#2563eb" : "#16a34a",
                   }}
                 >
                   {ponto.nome}
@@ -71,25 +69,22 @@ export default function MapaPontos({ filtro = "todos" }: Props) {
 
                 <p style={{ fontSize: "13px" }}>
                   {ponto.tipo === "Posto"
-                    ? "🏥 Posto de saúde"
+                    ? "🏥 Unidade de saúde"
                     : "💊 Farmácia"}
                 </p>
 
-                <p style={{ fontSize: "12px" }}>
-                  📍 {ponto.endereco}
-                </p>
+                <p style={{ fontSize: "12px" }}>📍 {ponto.endereco}</p>
 
                 <a
                   href={`https://www.google.com/maps?q=${ponto.latitude},${ponto.longitude}`}
                   target="_blank"
+                  rel="noreferrer"
                   style={{
                     display: "block",
                     marginTop: "8px",
                     textAlign: "center",
                     background:
-                      ponto.tipo === "Posto"
-                        ? "#2563eb"
-                        : "#16a34a",
+                      ponto.tipo === "Posto" ? "#2563eb" : "#16a34a",
                     color: "#fff",
                     padding: "8px",
                     borderRadius: "999px",

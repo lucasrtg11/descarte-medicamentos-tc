@@ -165,7 +165,7 @@ export default function HomePage() {
             Este sistema foi desenvolvido <strong>exclusivamente para fins acadêmicos</strong>,
             em apoio ao projeto de pesquisa de mestrado de{" "}
             <strong>Daiana Silva Reis Santos</strong>, vinculada ao{" "}
-            <strong>Centro Universitário Vale do Rio Verde – UninCor</strong>.
+            <strong>Centro Universitário UninCor</strong>.
           </p>
 
           <p
@@ -179,7 +179,7 @@ export default function HomePage() {
             Desenvolvido por{" "}
             <strong>Lucas Ribeiro Tavares Gabriel</strong>, acadêmico-estagiário do curso de{" "}
             <strong>Ciência da Computação</strong> do{" "}
-            <strong>Centro Universitário Vale do Rio Verde – UninCor</strong>.
+            <strong>Centro Universitário UninCor</strong>.
           </p>
 
           <div

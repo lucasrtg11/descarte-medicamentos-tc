@@ -1,16 +1,54 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { pontosColeta } from "@/data/pontos-coleta";
 import MapaClient from "../mapa/MapaCliente";
 
-export default function MapaPage() {
-  const [filtroLista, setFiltroLista] = useState<
-    "todos" | "Farmácia" | "Posto"
-  >("todos");
+type Filtro = "todos" | "Farmácia" | "Posto";
 
+type LocalizacaoUsuario = {
+  latitude: number;
+  longitude: number;
+};
+
+function calcularDistanciaKm(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+) {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
+}
+
+function formatarDistancia(distancia: number) {
+  if (distancia < 1) {
+    return `${Math.round(distancia * 1000)} m`;
+  }
+
+  return `${distancia.toFixed(1)} km`;
+}
+
+export default function MapaPage() {
+  const [filtroLista, setFiltroLista] = useState<Filtro>("todos");
   const [colunas, setColunas] = useState(3);
+  const [localizacaoUsuario, setLocalizacaoUsuario] =
+    useState<LocalizacaoUsuario | null>(null);
+  const [carregandoLocalizacao, setCarregandoLocalizacao] = useState(false);
+  const [erroLocalizacao, setErroLocalizacao] = useState("");
 
   useEffect(() => {
     const ajustarColunas = () => {
@@ -29,9 +67,67 @@ export default function MapaPage() {
     return () => window.removeEventListener("resize", ajustarColunas);
   }, []);
 
-  const pontosFiltrados = pontosColeta.filter((p) =>
-    filtroLista === "todos" ? true : p.tipo === filtroLista
-  );
+  const obterLocalizacao = () => {
+    setErroLocalizacao("");
+
+    if (!navigator.geolocation) {
+      setErroLocalizacao("Seu navegador não permite usar localização.");
+      return;
+    }
+
+    setCarregandoLocalizacao(true);
+
+    navigator.geolocation.getCurrentPosition(
+      (posicao) => {
+        setLocalizacaoUsuario({
+          latitude: posicao.coords.latitude,
+          longitude: posicao.coords.longitude,
+        });
+
+        setCarregandoLocalizacao(false);
+      },
+      () => {
+        setErroLocalizacao(
+          "Não foi possível acessar sua localização. Verifique a permissão do navegador."
+        );
+        setCarregandoLocalizacao(false);
+      }
+    );
+  };
+
+  const pontosFiltrados = useMemo(() => {
+    const lista = pontosColeta.filter((p) =>
+      filtroLista === "todos" ? true : p.tipo === filtroLista
+    );
+
+    if (!localizacaoUsuario) {
+      return lista;
+    }
+
+    return [...lista].sort((a, b) => {
+      const distanciaA =
+        a.latitude !== 0 && a.longitude !== 0
+          ? calcularDistanciaKm(
+              localizacaoUsuario.latitude,
+              localizacaoUsuario.longitude,
+              a.latitude,
+              a.longitude
+            )
+          : Infinity;
+
+      const distanciaB =
+        b.latitude !== 0 && b.longitude !== 0
+          ? calcularDistanciaKm(
+              localizacaoUsuario.latitude,
+              localizacaoUsuario.longitude,
+              b.latitude,
+              b.longitude
+            )
+          : Infinity;
+
+      return distanciaA - distanciaB;
+    });
+  }, [filtroLista, localizacaoUsuario]);
 
   return (
     <main
@@ -107,7 +203,7 @@ export default function MapaPage() {
           style={{
             display: "flex",
             gap: "10px",
-            marginBottom: "20px",
+            marginBottom: "14px",
             flexWrap: "wrap",
             justifyContent: "center",
           }}
@@ -118,7 +214,7 @@ export default function MapaPage() {
             return (
               <button
                 key={tipo}
-                onClick={() => setFiltroLista(tipo as any)}
+                onClick={() => setFiltroLista(tipo as Filtro)}
                 style={{
                   padding: "10px 18px",
                   borderRadius: "999px",
@@ -139,10 +235,43 @@ export default function MapaPage() {
                   ? "Todos"
                   : tipo === "Farmácia"
                   ? "💊 Farmácias"
-                  : "🏥 Postos"}
+                  : "🏥 Unidades de saúde"}
               </button>
             );
           })}
+        </div>
+
+        <div style={{ textAlign: "center", marginBottom: "20px" }}>
+          <button
+            onClick={obterLocalizacao}
+            disabled={carregandoLocalizacao}
+            style={{
+              padding: "10px 18px",
+              borderRadius: "999px",
+              border: "1px solid #bbf7d0",
+              background: "#ffffff",
+              color: "#065f46",
+              cursor: carregandoLocalizacao ? "not-allowed" : "pointer",
+              fontWeight: "600",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
+            }}
+          >
+            {carregandoLocalizacao
+              ? "Buscando localização..."
+              : "📍 Usar minha localização"}
+          </button>
+
+          {localizacaoUsuario && (
+            <p style={{ color: "#047857", fontSize: "14px", marginTop: "8px" }}>
+              Locais ordenados pelos mais próximos de você.
+            </p>
+          )}
+
+          {erroLocalizacao && (
+            <p style={{ color: "#dc2626", fontSize: "14px", marginTop: "8px" }}>
+              {erroLocalizacao}
+            </p>
+          )}
         </div>
 
         <section
@@ -156,6 +285,16 @@ export default function MapaPage() {
         >
           {pontosFiltrados.map((ponto) => {
             const urlMaps = `https://www.google.com/maps/search/?api=1&query=${ponto.latitude},${ponto.longitude}`;
+
+            const distancia =
+              localizacaoUsuario && ponto.latitude !== 0 && ponto.longitude !== 0
+                ? calcularDistanciaKm(
+                    localizacaoUsuario.latitude,
+                    localizacaoUsuario.longitude,
+                    ponto.latitude,
+                    ponto.longitude
+                  )
+                : null;
 
             return (
               <div
@@ -193,13 +332,26 @@ export default function MapaPage() {
 
                   <p style={{ margin: "8px 0", color: "#374151" }}>
                     {ponto.tipo === "Posto"
-                      ? "🏥 Posto de saúde"
+                      ? "🏥 Unidade de saúde"
                       : "💊 Farmácia"}
                   </p>
 
-                  <p style={{ margin: "8px 0 16px 0", color: "#6b7280" }}>
+                  <p style={{ margin: "8px 0 10px 0", color: "#6b7280" }}>
                     📍 {ponto.endereco}
                   </p>
+
+                  {distancia !== null && (
+                    <p
+                      style={{
+                        margin: "0 0 16px 0",
+                        color: "#047857",
+                        fontWeight: "600",
+                        fontSize: "14px",
+                      }}
+                    >
+                      Aproximadamente {formatarDistancia(distancia)} de você
+                    </p>
+                  )}
 
                   <a
                     href={urlMaps}
