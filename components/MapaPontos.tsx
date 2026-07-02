@@ -26,25 +26,11 @@ const iconFarmacia = L.icon({
   popupAnchor: [0, -45],
 });
 
-const iconFarmaciaGrande = L.icon({
-  iconUrl: "/leaflet/farmacia.png",
-  iconSize: [45, 64],
-  iconAnchor: [22, 64],
-  popupAnchor: [0, -58],
-});
-
 const iconPosto = L.icon({
   iconUrl: "/leaflet/posto.png",
   iconSize: [35, 50],
   iconAnchor: [17, 50],
   popupAnchor: [0, -45],
-});
-
-const iconPostoGrande = L.icon({
-  iconUrl: "/leaflet/posto.png",
-  iconSize: [45, 64],
-  iconAnchor: [22, 64],
-  popupAnchor: [0, -58],
 });
 
 const iconUsuario = L.divIcon({
@@ -151,20 +137,6 @@ export default function MapaPontos({
               key={ponto.id}
               position={[ponto.latitude, ponto.longitude]}
               icon={ponto.tipo === "Posto" ? iconPosto : iconFarmacia}
-              eventHandlers={{
-                mouseover: (e) => {
-                  e.target.setIcon(
-                    ponto.tipo === "Posto"
-                      ? iconPostoGrande
-                      : iconFarmaciaGrande
-                  );
-                },
-                mouseout: (e) => {
-                  e.target.setIcon(
-                    ponto.tipo === "Posto" ? iconPosto : iconFarmacia
-                  );
-                },
-              }}
             >
               <Popup>
                 <div style={{ fontFamily: "Inter", minWidth: "180px" }}>
@@ -192,8 +164,7 @@ export default function MapaPontos({
                       display: "block",
                       marginTop: "8px",
                       textAlign: "center",
-                      background:
-                        ponto.tipo === "Posto" ? "#2563eb" : "#16a34a",
+                      background: ponto.tipo === "Posto" ? "#2563eb" : "#16a34a",
                       color: "#fff",
                       padding: "8px",
                       borderRadius: "999px",
