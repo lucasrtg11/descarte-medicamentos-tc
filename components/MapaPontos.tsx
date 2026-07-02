@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
 import { pontosColeta } from "@/data/pontos-coleta";
@@ -18,37 +18,6 @@ type Props = {
 };
 
 const center: [number, number] = [-21.6955, -45.2575];
-
-const iconFarmacia = L.icon({
-  iconUrl: "/leaflet/farmacia.png",
-  iconSize: [35, 50],
-  iconAnchor: [17, 50],
-  popupAnchor: [0, -45],
-});
-
-const iconPosto = L.icon({
-  iconUrl: "/leaflet/posto.png",
-  iconSize: [35, 50],
-  iconAnchor: [17, 50],
-  popupAnchor: [0, -45],
-});
-
-const iconUsuario = L.divIcon({
-  className: "",
-  html: `
-    <div style="
-      width: 22px;
-      height: 22px;
-      background: #2563eb;
-      border: 4px solid #ffffff;
-      border-radius: 999px;
-      box-shadow: 0 0 0 12px rgba(37, 99, 235, 0.22), 0 8px 20px rgba(37, 99, 235, 0.35);
-    "></div>
-  `,
-  iconSize: [30, 30],
-  iconAnchor: [15, 15],
-  popupAnchor: [0, -15],
-});
 
 function CentralizarMapa({
   localizacaoUsuario,
@@ -77,6 +46,49 @@ export default function MapaPontos({
   filtro = "todos",
   localizacaoUsuario,
 }: Props) {
+  const iconFarmacia = useMemo(
+    () =>
+      L.icon({
+        iconUrl: "/leaflet/farmacia.png",
+        iconSize: [35, 50],
+        iconAnchor: [17, 50],
+        popupAnchor: [0, -45],
+      }),
+    []
+  );
+
+  const iconPosto = useMemo(
+    () =>
+      L.icon({
+        iconUrl: "/leaflet/posto.png",
+        iconSize: [35, 50],
+        iconAnchor: [17, 50],
+        popupAnchor: [0, -45],
+      }),
+    []
+  );
+
+  const iconUsuario = useMemo(
+    () =>
+      L.divIcon({
+        className: "",
+        html: `
+          <div style="
+            width: 22px;
+            height: 22px;
+            background: #2563eb;
+            border: 4px solid #ffffff;
+            border-radius: 999px;
+            box-shadow: 0 0 0 12px rgba(37, 99, 235, 0.22), 0 8px 20px rgba(37, 99, 235, 0.35);
+          "></div>
+        `,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+        popupAnchor: [0, -15],
+      }),
+    []
+  );
+
   const pontosFiltrados = pontosColeta
     .filter((p) => {
       if (filtro === "todos") return true;

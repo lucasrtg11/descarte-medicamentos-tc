@@ -4,7 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { pontosColeta } from "@/data/pontos-coleta";
-import MapaClient from "../mapa/MapaCliente";
+import dynamic from "next/dynamic";
+
+const MapaClient = dynamic(() => import("../mapa/MapaCliente"), {
+  ssr: false,
+});
 
 type Filtro = "todos" | "Farmácia" | "Posto";
 
