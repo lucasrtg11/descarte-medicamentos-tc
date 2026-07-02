@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { pontosColeta } from "@/data/pontos-coleta";
 import MapaClient from "../mapa/MapaCliente";
@@ -29,20 +30,18 @@ function calcularDistanciaKm(
       Math.sin(dLon / 2) *
       Math.sin(dLon / 2);
 
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  return R * c;
+  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
 
 function formatarDistancia(distancia: number) {
-  if (distancia < 1) {
-    return `${Math.round(distancia * 1000)} m`;
-  }
-
-  return `${distancia.toFixed(1)} km`;
+  return distancia < 1
+    ? `${Math.round(distancia * 1000)} m`
+    : `${distancia.toFixed(1)} km`;
 }
 
 export default function MapaPage() {
+  const searchParams = useSearchParams();
+
   const [filtroLista, setFiltroLista] = useState<Filtro>("todos");
   const [colunas, setColunas] = useState(3);
   const [localizacaoUsuario, setLocalizacaoUsuario] =
@@ -52,13 +51,9 @@ export default function MapaPage() {
 
   useEffect(() => {
     const ajustarColunas = () => {
-      if (window.innerWidth <= 640) {
-        setColunas(1);
-      } else if (window.innerWidth <= 1024) {
-        setColunas(2);
-      } else {
-        setColunas(3);
-      }
+      if (window.innerWidth <= 640) setColunas(1);
+      else if (window.innerWidth <= 1024) setColunas(2);
+      else setColunas(3);
     };
 
     ajustarColunas();
@@ -95,14 +90,18 @@ export default function MapaPage() {
     );
   };
 
+  useEffect(() => {
+    if (searchParams.get("localizacao") === "1") {
+      obterLocalizacao();
+    }
+  }, [searchParams]);
+
   const pontosFiltrados = useMemo(() => {
     const lista = pontosColeta.filter((p) =>
       filtroLista === "todos" ? true : p.tipo === filtroLista
     );
 
-    if (!localizacaoUsuario) {
-      return lista;
-    }
+    if (!localizacaoUsuario) return lista;
 
     return [...lista].sort((a, b) => {
       const distanciaA =
@@ -196,7 +195,10 @@ export default function MapaPage() {
             Veja abaixo os locais disponíveis para descarte correto de medicamentos.
           </p>
 
-          <MapaClient filtro={filtroLista} />
+          <MapaClient
+            filtro={filtroLista}
+            localizacaoUsuario={localizacaoUsuario}
+          />
         </section>
 
         <div
@@ -284,7 +286,11 @@ export default function MapaPage() {
           }}
         >
           {pontosFiltrados.map((ponto) => {
-            const urlMaps = `https://www.google.com/maps/search/?api=1&query=${ponto.latitude},${ponto.longitude}`;
+            const destino = `${ponto.latitude},${ponto.longitude}`;
+
+            const urlMaps = localizacaoUsuario
+              ? `https://www.google.com/maps/dir/?api=1&origin=${localizacaoUsuario.latitude},${localizacaoUsuario.longitude}&destination=${destino}`
+              : `https://www.google.com/maps/search/?api=1&query=${destino}`;
 
             const distancia =
               localizacaoUsuario && ponto.latitude !== 0 && ponto.longitude !== 0
@@ -313,13 +319,7 @@ export default function MapaPage() {
                   boxSizing: "border-box",
                 }}
               >
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    flex: 1,
-                  }}
-                >
+                <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
                   <h3
                     style={{
                       marginTop: 0,
