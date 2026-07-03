@@ -4,11 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { pontosColeta } from "@/data/pontos-coleta";
-import dynamic from "next/dynamic";
-
-const MapaClient = dynamic(() => import("../mapa/MapaCliente"), {
-  ssr: false,
-});
+import MapaClient from "../mapa/MapaCliente";
 
 type Filtro = "todos" | "Farmácia" | "Posto";
 
@@ -43,7 +39,7 @@ function formatarDistancia(distancia: number) {
     : `${distancia.toFixed(1)} km`;
 }
 
-function MapaConteudo() {
+export default function MapaPage() {
   const searchParams = useSearchParams();
 
   const [filtroLista, setFiltroLista] = useState<Filtro>("todos");
