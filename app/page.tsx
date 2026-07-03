@@ -39,6 +39,26 @@ export default function HomePage() {
           margin: "0 auto",
         }}
       >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "24px",
+          }}
+        >
+          <img
+            src="/unincor-banner.png"
+            alt="Centro Universitário UninCor"
+            style={{
+              width: "100%",
+              maxWidth: "1100px",
+              height: "auto",
+              display: "block",
+              borderRadius: "16px",
+            }}
+          />
+        </div>
+
         {/* HERO */}
         <section
           style={{
@@ -329,6 +349,30 @@ export default function HomePage() {
             <span style={statTextStyle}>Unidades de saúde</span>
           </div>
         </section>
+        <div
+          style={{
+            marginTop: "36px",
+            marginBottom: "24px",
+            width: "100%",
+            background: "#ffffff",
+            borderRadius: "20px",
+            padding: "16px",
+            boxSizing: "border-box",
+            boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
+            border: "1px solid #d1fae5",
+          }}
+        >
+          <img
+            src="/unincor-banner.png"
+            alt="Centro Universitário UninCor"
+            style={{
+              width: "100%",
+              height: "auto",
+              display: "block",
+              borderRadius: "12px",
+            }}
+          />
+        </div>
 
         {/* INFORMAÇÕES */}
         <section
