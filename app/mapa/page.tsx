@@ -43,7 +43,7 @@ function formatarDistancia(distancia: number) {
     : `${distancia.toFixed(1)} km`;
 }
 
-export default function MapaPage() {
+function MapaConteudo() {
   const searchParams = useSearchParams();
 
   const [filtroLista, setFiltroLista] = useState<Filtro>("todos");
