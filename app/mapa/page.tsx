@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { pontosColeta } from "@/data/pontos-coleta";
@@ -26,9 +26,9 @@ function calcularDistanciaKm(
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+    Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
 
   return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
@@ -39,7 +39,7 @@ function formatarDistancia(distancia: number) {
     : `${distancia.toFixed(1)} km`;
 }
 
-export default function MapaPage() {
+function MapaPageContent() {
   const searchParams = useSearchParams();
 
   const [filtroLista, setFiltroLista] = useState<Filtro>("todos");
@@ -107,21 +107,21 @@ export default function MapaPage() {
       const distanciaA =
         a.latitude !== 0 && a.longitude !== 0
           ? calcularDistanciaKm(
-              localizacaoUsuario.latitude,
-              localizacaoUsuario.longitude,
-              a.latitude,
-              a.longitude
-            )
+            localizacaoUsuario.latitude,
+            localizacaoUsuario.longitude,
+            a.latitude,
+            a.longitude
+          )
           : Infinity;
 
       const distanciaB =
         b.latitude !== 0 && b.longitude !== 0
           ? calcularDistanciaKm(
-              localizacaoUsuario.latitude,
-              localizacaoUsuario.longitude,
-              b.latitude,
-              b.longitude
-            )
+            localizacaoUsuario.latitude,
+            localizacaoUsuario.longitude,
+            b.latitude,
+            b.longitude
+          )
           : Infinity;
 
       return distanciaA - distanciaB;
@@ -236,8 +236,8 @@ export default function MapaPage() {
                 {tipo === "todos"
                   ? "Todos"
                   : tipo === "Farmácia"
-                  ? "💊 Farmácias"
-                  : "🏥 Unidades de saúde"}
+                    ? "💊 Farmácias"
+                    : "🏥 Unidades de saúde"}
               </button>
             );
           })}
@@ -295,11 +295,11 @@ export default function MapaPage() {
             const distancia =
               localizacaoUsuario && ponto.latitude !== 0 && ponto.longitude !== 0
                 ? calcularDistanciaKm(
-                    localizacaoUsuario.latitude,
-                    localizacaoUsuario.longitude,
-                    ponto.latitude,
-                    ponto.longitude
-                  )
+                  localizacaoUsuario.latitude,
+                  localizacaoUsuario.longitude,
+                  ponto.latitude,
+                  ponto.longitude
+                )
                 : null;
 
             return (
@@ -384,5 +384,12 @@ export default function MapaPage() {
         </section>
       </div>
     </main>
+  );
+}
+export default function MapaPage() {
+  return (
+    <Suspense fallback={null}>
+      <MapaPageContent />
+    </Suspense>
   );
 }
