@@ -332,8 +332,8 @@ function MapaPageContent() {
 
                   <p style={{ margin: "8px 0", color: "#374151" }}>
                     {ponto.tipo === "Posto"
-                      ? "🏥 Unidade de saúde"
-                      : "💊 Farmácia"}
+                      ? "🏥 Unidade de saúde para informações"
+                      : "💊 Farmácia para descarte"}
                   </p>
 
                   <p style={{ margin: "8px 0 10px 0", color: "#6b7280" }}>
