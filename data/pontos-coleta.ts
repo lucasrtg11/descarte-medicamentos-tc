@@ -117,8 +117,8 @@ export const pontosColeta: PontoColeta[] = [
     nome: "ESF CAIC",
     tipo: "Posto",
     endereco: "Rua Bem-Te-Vi, nº 522 – Bela Vista",
-    latitude: -21.684859206731147, 
-    longitude: -45.24817176266756,
+    latitude: -21.685052036269695, 
+    longitude: -45.247722028499815,
   },
   {
     id: 14,
