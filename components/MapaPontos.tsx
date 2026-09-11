@@ -119,7 +119,10 @@ export default function MapaPontos({
       >
         <CentralizarMapa localizacaoUsuario={localizacaoUsuario} />
 
-        <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
+        <TileLayer
+          attribution='&copy; OpenStreetMap contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
 
         {localizacaoUsuario && (
           <Marker
